@@ -1,23 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*try {
-    var settings = common.readConfig();
-}
-catch (e) {
-    logger.error(e.toString());
-    exports.shutdown(-1);
-}*/
-
-/*var im = null;
-
-if (settings.CODE_COVERAGE) {
-    im = require('istanbul-middleware');
-
-    logger.info('Code coverage enabled - ensure this is not production');
-    im.hookLoader(__dirname);
-} else {
-    logger.info('Code coverage disabled');
-}*/
-
 var config = require('config');
 var log = require('npmlog');
 var express = require('express');
@@ -30,6 +10,17 @@ var fs = require('fs');
 var mysql = require('mysql');
 var async = require('async');
 var https = require('https');
+
+/*var im = null;
+
+ if (config.get('codeCoverage') {
+ im = require('istanbul-middleware');
+
+ log.info('Code coverage enabled - ensure this is not production');
+ im.hookLoader(__dirname);
+ } else {
+ log.info('Code coverage disabled');
+}*/
 
 var app = express();
 
