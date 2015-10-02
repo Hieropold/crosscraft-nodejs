@@ -1,0 +1,62 @@
+{>"layouts/master" /}
+
+{<title}{/title}
+
+{<styles}
+html, body {
+height: 100%;
+}
+
+body {
+margin: 0;
+padding: 0;
+width: 100%;
+display: table;
+font-weight: 100;
+}
+
+.container {
+text-align: center;
+display: table-cell;
+vertical-align: middle;
+}
+
+.content {
+text-align: center;
+display: inline-block;
+}
+
+.title {
+font-size: 96px;
+}
+{/styles}
+
+{<head}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{/head}
+
+{<content}
+<div class="content">
+
+    <div class="title">Crosscraft</div>
+
+    {#recaptchaForm}
+        <form action="/verify-human" method="post">
+            <div class="g-recaptcha" data-sitekey="{recaptchaForm.recatpchaSiteKey}"></div>
+            <input type="submit" value="Играть" class="btn btn-lg btn-primary">
+        </form>
+    {:else}
+        <a href="/quiz" class="btn btn-lg btn-primary">Играть</a>
+    {/recaptchaForm}
+
+    <!--<?php if ($isHuman): ?>
+    <a href="/quiz" class="btn btn-lg btn-primary">Играть</a>
+    <?php else: ?>
+    {!! Form::open(array('url' => 'quiz/init')) !!}
+    {!! Form::token() !!}
+    {!! Recaptcha::render() !!}
+    {!! Form::submit('Играть', ['class' => 'btn btn-lg btn-primary']) !!}
+    {!! Form::close() !!}
+    <?php endif; ?>-->
+</div>
+{/content}

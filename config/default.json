@@ -1,0 +1,19 @@
+{
+    "db": {
+        "connectionLimit": 20,
+        "host": "localhost",
+        "user": "crosscraft",
+        "password": "crosscraft",
+        "database": "crosscraft"
+    },
+    "sessions": {
+        "secret": "crosscraftian",
+        "resave": false,
+        "name": "ccsid",
+        "saveUninitialized": false
+    },
+    "recaptcha": {
+        "siteKey": "6LdB0AwTAAAAAPXB_1jhA0u4fuyC2Tnu0vuP2-9p",
+        "secret": "secret"
+    }
+}

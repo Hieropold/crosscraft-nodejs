@@ -1,0 +1,37 @@
+{
+  "name": "crosscraft",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^1.4.2",
+    "body-parser": "^1.14.0",
+    "config": "^1.16.0",
+    "consolidate": "^0.13.1",
+    "dustjs-linkedin": "^2.7.2",
+    "express": "^4.10.1",
+    "express-session": "^1.11.3",
+    "express-mysql-session": "^0.4.1",
+    "istanbul-middleware": "^0.2.0",
+    "mysql": "^2.9.0",
+    "npmlog": "^1.2.1"
+  },
+  "devDependencies": {
+    "mocha": "^1.17.1"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "node  ./node_modules/mocha/bin/mocha -R spec",
+    "schema-version": "node ./schema_migrations/getVersion.js",
+    "schema-update": "node ./schema_migrations/updateVersion.js",
+    "db-reset": "node ./scripts/resetDB.js",
+    "test-data-insert": "node ./scripts/insertTestData.js"
+  },
+  "author": "",
+  "engines": {
+    "node": ">=4.0.0",
+    "npm": ">=2.7.4"
+  },
+  "engineStrict": true,
+  "private": true
+}
