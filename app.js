@@ -102,7 +102,7 @@ app.get('/quiz', restrictAccess, function (req, res) {
                 return callback(null);
             });
         },
-        function randomOffset(callback) {
+        function randomWordOffset(callback) {
             dbConn.query('SELECT FLOOR(RAND() * COUNT(*)) AS offset FROM words', function (err, rows) {
                 if (err) return callback(err);
 
@@ -120,30 +120,74 @@ app.get('/quiz', restrictAccess, function (req, res) {
                 return callback(null, randomWord);
             });
         },
-        function correctClue(randomWord, callback) {
-            dbConn.query('SELECT * FROM clues WHERE wid = ' + randomWord.wid, function (err, rows) {
-                if (err) return callback(err);
-
-                var correctClue = rows[0];
-
-                return callback(null, randomWord, correctClue);
-            });
-        },
-        function incorrectClues(randomWord, correctClue, callback) {
+        function calcCluesCount(randomWord, callback) {
             dbConn.query('SELECT COUNT(*) AS total FROM clues', function (err, rows) {
                 if (err) return callback(err);
 
-                var cluesCount = rows[0].total;
+                var totalWords = rows[0].total;
 
-                for (i = 0; i < 5; i++) {
-                    var randomOffset = Math.random(0, cluesCount);
-                    log.silly('app', 'Random offset generated: %d', randomOffset);
-                }
-
-                return callback(null, randomWord, correctClue);
+                return callback(null, randomWord, totalWords);
             });
-        }
-    ], function final(err, randomWord, correctClue) {
+        },
+        function getClues(randomWord, totalWords, callback) {
+            async.parallel({
+                    correct: function(callback) {
+                        dbConn.query('SELECT * FROM clues WHERE wid = ' + randomWord.wid, function (err, rows) {
+                            if (err) return callback(err);
+
+                            var correctClue = rows[0];
+
+                            return callback(null, correctClue);
+                        });
+                    },
+                    incorrect: function(callback) {
+                        var incorrectClues = [];
+                        for (i = 0; i < 5; i++) {
+                            incorrectClues.push(parseInt(Math.random() * totalWords));
+                        }
+
+                        async.map(
+                            incorrectClues,
+                            function (offset, callback) {
+                                dbConn.query('SELECT * FROM clues LIMIT ' + offset + ', 1', function (err, rows) {
+                                    if (err) return callback(err);
+
+                                    var clue = rows[0];
+
+                                    return callback(null, clue);
+                                });
+                            },
+                            function (err, clues) {
+                                if (err) return callback(err);
+
+                                return callback(null, clues);
+                            }
+                        );
+                    }
+                },
+                function cluesDone(err, clues) {
+                    if (err) return callback(err);
+
+                    // Shuffle correct clue and incorrect ones
+                    var shuffledClues = [];
+                    shuffledClues.push(clues.correct);
+                    shuffledClues = shuffledClues.concat(clues.incorrect);
+                    var shuffle = function(array) {
+                        for (var i = array.length - 1; i > 0; i--) {
+                            var j = Math.floor(Math.random() * (i + 1));
+                            var temp = array[i];
+                            array[i] = array[j];
+                            array[j] = temp;
+                        }
+                        return array;
+                    };
+                    shuffledClues = shuffle(shuffledClues);
+
+                    return callback(null, randomWord, shuffledClues);
+                }
+            );
+        },
+    ], function final(err, randomWord, clues) {
         if (dbConn) {
             dbConn.release();
         }
@@ -156,10 +200,7 @@ app.get('/quiz', restrictAccess, function (req, res) {
         res.render('pages/quiz', {
             'word': randomWord.word,
             'wid': randomWord.wid,
-            'clues': [
-                {'cid': correctClue.cid, 'clue': correctClue.clue},
-                {'cid': 4, 'clue': 'Ащаща'}
-            ]
+            'clues': clues
         });
     });
 });
