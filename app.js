@@ -132,7 +132,7 @@ app.get('/quiz', restrictAccess, function (req, res) {
         function getClues(randomWord, totalWords, callback) {
             async.parallel({
                     correct: function(callback) {
-                        dbConn.query('SELECT * FROM clues WHERE wid = ' + randomWord.wid, function (err, rows) {
+                        dbConn.query('SELECT cid, clue FROM clues WHERE wid = ' + randomWord.wid, function (err, rows) {
                             if (err) return callback(err);
 
                             var correctClue = rows[0];
@@ -149,7 +149,7 @@ app.get('/quiz', restrictAccess, function (req, res) {
                         async.map(
                             incorrectClues,
                             function (offset, callback) {
-                                dbConn.query('SELECT * FROM clues LIMIT ' + offset + ', 1', function (err, rows) {
+                                dbConn.query('SELECT cid, clue FROM clues LIMIT ' + offset + ', 1', function (err, rows) {
                                     if (err) return callback(err);
 
                                     var clue = rows[0];
@@ -201,6 +201,58 @@ app.get('/quiz', restrictAccess, function (req, res) {
             'word': randomWord.word,
             'wid': randomWord.wid,
             'clues': clues
+        });
+    });
+});
+
+app.get('/quiz/answer/:wid/:cid', restrictAccess, function (req, res) {
+    var wid = parseInt(req.params.wid);
+    var cid = parseInt(req.params.cid);
+
+    db.getConnection(function (err, connection) {
+        if (err) {
+            log.error('app', 'Error: %s', err);
+            return res.status(500).send('Internal error');
+        }
+
+        async.parallel({
+            word: function(callback) {
+                connection.query('SELECT * FROM clues WHERE cid = ' + cid, function (err, rows) {
+                    if (err) return callback(err);
+
+                    if (rows.length == 0) {
+                        return callback('not_found');
+                    }
+
+                    return callback(null, rows[0]);
+                });
+            },
+            clue: function(callback) {
+                connection.query('SELECT * FROM words WHERE wid = ' + wid, function (err, rows) {
+                    if (err) return callback(err);
+
+                    if (rows.length == 0) {
+                        return callback('not_found');
+                    }
+
+                    return callback(null, rows[0]);
+                });
+            }
+        },
+        function(err, results) {
+            if (err && err.toString() == 'not_found') {
+                return res.status(404).send('Not found');
+            }
+
+            if (err) {
+                log.error('app', 'Error: %s', err);
+                return res.status(500).send('Internal error');
+            }
+
+            if (results.word.wid && results.clue.wid && results.word.wid == results.clue.wid) {
+                return res.render('pages/success');
+            }
+            return res.render('pages/fail');
         });
     });
 });
