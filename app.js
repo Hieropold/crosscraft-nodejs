@@ -11,17 +11,6 @@ var mysql = require('mysql');
 var async = require('async');
 var https = require('https');
 
-/*var im = null;
-
- if (config.get('codeCoverage') {
- im = require('istanbul-middleware');
-
- log.info('Code coverage enabled - ensure this is not production');
- im.hookLoader(__dirname);
- } else {
- log.info('Code coverage disabled');
-}*/
-
 var app = express();
 
 // Template engine
