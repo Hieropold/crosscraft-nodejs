@@ -8,7 +8,6 @@ var dust = require('dustjs-linkedin');
 var cons = require('consolidate');
 var fs = require('fs');
 var async = require('async');
-var https = require('https');
 
 var db = require(__dirname + '/models/db.js');
 
