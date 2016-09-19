@@ -1,13 +1,13 @@
 var config = require('config');
 var log = require('npmlog');
 var express = require('express');
-var session = require('express-session');
-var SessionStore = require('express-mysql-session');
 var bodyParser = require('body-parser');
 var dust = require('dustjs-linkedin');
 var cons = require('consolidate');
 var fs = require('fs');
-var async = require('async');
+
+var session = require('express-session');
+var SessionStore = require('express-mysql-session')(session);
 
 var db = require(__dirname + '/models/db.js');
 
