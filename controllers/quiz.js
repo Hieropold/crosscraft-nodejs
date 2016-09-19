@@ -1,29 +1,30 @@
 'use strict';
 
+var async = require('async');
+var Promise = require('bluebird');
+var log = require('npmlog');
+var word = require(__dirname + '/../models/word.js');
+
 module.exports.create = create;
 
 function create(app, preproc) {
     app.get('/quiz', preproc, function (req, res) {
 
-        var dbConn = null;
+        word.getRandomWord()
+            .then(function (randomWord) {
+                console.log(randomWord);
 
-        async.waterfall([
-            function connect(callback) {
-                db.getConnection(function (err, connection) {
-                    if (err) return callback(err);
-
-                    dbConn = connection;
-                    return callback(null);
+                res.render('pages/quiz', {
+                    'word': randomWord.word,
+                    'wid': 'sdsdf',
+                    'clues': []
                 });
-            },
-            function randomWordOffset(callback) {
-                dbConn.query('SELECT FLOOR(RAND() * COUNT(*)) AS offset FROM words', function (err, rows) {
-                    if (err) return callback(err);
+            })
+            .catch(function (err) {
+                log.error(err);
+            });
 
-                    var randomOffset = rows[0].offset;
-
-                    return callback(null, randomOffset);
-                });
+        /*
             },
             function randomWord(randomOffset, callback) {
                 dbConn.query('SELECT * FROM words LIMIT ' + randomOffset + ', 1', function (err, rows) {
@@ -116,7 +117,7 @@ function create(app, preproc) {
                 'wid': randomWord.wid,
                 'clues': clues
             });
-        });
+        });*/
     });
 
     app.get('/quiz/answer/:wid/:cid', preproc, function (req, res) {
