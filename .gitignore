@@ -4,3 +4,4 @@ error.log
 nohup.out
 nohup.old.out
 node_modules
+config/dev.json
