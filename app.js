@@ -7,9 +7,10 @@ var bodyParser = require('body-parser');
 var dust = require('dustjs-linkedin');
 var cons = require('consolidate');
 var fs = require('fs');
-var mysql = require('mysql');
 var async = require('async');
 var https = require('https');
+
+var db = require(__dirname + '/models/db.js');
 
 // Controllers
 var ctrls = [
@@ -29,14 +30,14 @@ app.use(express.static(__dirname + '/public', {redirect: false}));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-log.info('app', 'Initializing mysql db connections pool...');
-var db = mysql.createPool(config.get('db'));
-log.info('app', 'Done.');
+// Initialize DB
+db.init(config.get('db'));
 
+// Initialize sessions
 log.info('app', 'Initializing mysql session store...');
 var sessionStore = new SessionStore({
     useConnectionPooling: true,
-}, db);
+}, db.getConnection());
 log.info('app', 'Done.');
 
 log.info('app', 'Initializing express session handler...');
