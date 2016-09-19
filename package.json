@@ -9,7 +9,7 @@
     "config": "^1.16.0",
     "consolidate": "^0.13.1",
     "dustjs-linkedin": "^2.7.2",
-    "express": "^4.10.1",
+    "express": "^4.14.0",
     "express-session": "^1.11.3",
     "express-mysql-session": "^0.4.1",
     "mysql": "^2.9.0",
