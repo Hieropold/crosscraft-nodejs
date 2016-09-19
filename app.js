@@ -14,6 +14,7 @@ var db = require(__dirname + '/models/db.js');
 
 // Controllers
 var ctrls = [
+    require(__dirname + '/controllers/index.js'),
     require(__dirname + '/controllers/verifyHuman.js'),
     require(__dirname + '/controllers/quiz.js')
 ];
@@ -59,16 +60,6 @@ function restrictAccess(req, res, next) {
 
 ctrls.forEach(function (controller) {
     controller.create(app, restrictAccess);
-});
-
-app.get('/', function (req, res) {
-    var templateVars = {};
-    if (!req.session.isHuman) {
-        log.info('app', 'Challenging if human.');
-        templateVars.recaptchaForm = {recatpchaSiteKey: config.get('recaptcha.siteKey')};
-    }
-
-    res.render('pages/welcome', templateVars);
 });
 
 var server = app.listen(8080, function () {
