@@ -1,5 +1,9 @@
 'use strict';
 
+var log = require('npmlog');
+var config = require('config');
+var https = require('https');
+
 function create(app) {
     app.post('/verify-human', function (req, res) {
         var recaptchaToken = req.body['g-recaptcha-response'];
