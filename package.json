@@ -12,7 +12,6 @@
     "express": "^4.10.1",
     "express-session": "^1.11.3",
     "express-mysql-session": "^0.4.1",
-    "istanbul-middleware": "^0.2.0",
     "mysql": "^2.9.0",
     "npmlog": "^1.2.1"
   },
