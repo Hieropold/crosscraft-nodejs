@@ -9,115 +9,21 @@ module.exports.create = create;
 
 function create(app, preproc) {
     app.get('/quiz', preproc, function (req, res) {
-
         word.getRandomWord()
             .then(function (randomWord) {
-                console.log(randomWord);
-
+                return word.attachCluesList(randomWord);
+            })
+            .then(function (word) {
                 res.render('pages/quiz', {
-                    'word': randomWord.word,
-                    'wid': 'sdsdf',
-                    'clues': []
+                    'word': word.word,
+                    'wid': word.wid,
+                    'clues': word.clues
                 });
             })
             .catch(function (err) {
-                log.error(err);
-            });
-
-        /*
-            },
-            function randomWord(randomOffset, callback) {
-                dbConn.query('SELECT * FROM words LIMIT ' + randomOffset + ', 1', function (err, rows) {
-                    if (err) return callback(err);
-
-                    var randomWord = rows[0];
-
-                    return callback(null, randomWord);
-                });
-            },
-            function calcCluesCount(randomWord, callback) {
-                dbConn.query('SELECT COUNT(*) AS total FROM clues', function (err, rows) {
-                    if (err) return callback(err);
-
-                    var totalWords = rows[0].total;
-
-                    return callback(null, randomWord, totalWords);
-                });
-            },
-            function getClues(randomWord, totalWords, callback) {
-                async.parallel({
-                        correct: function(callback) {
-                            dbConn.query('SELECT cid, clue FROM clues WHERE wid = ' + randomWord.wid, function (err, rows) {
-                                if (err) return callback(err);
-
-                                var correctClue = rows[0];
-
-                                return callback(null, correctClue);
-                            });
-                        },
-                        incorrect: function(callback) {
-                            var incorrectClues = [];
-                            for (i = 0; i < 5; i++) {
-                                incorrectClues.push(parseInt(Math.random() * totalWords));
-                            }
-
-                            async.map(
-                                incorrectClues,
-                                function (offset, callback) {
-                                    dbConn.query('SELECT cid, clue FROM clues LIMIT ' + offset + ', 1', function (err, rows) {
-                                        if (err) return callback(err);
-
-                                        var clue = rows[0];
-
-                                        return callback(null, clue);
-                                    });
-                                },
-                                function (err, clues) {
-                                    if (err) return callback(err);
-
-                                    return callback(null, clues);
-                                }
-                            );
-                        }
-                    },
-                    function cluesDone(err, clues) {
-                        if (err) return callback(err);
-
-                        // Shuffle correct clue and incorrect ones
-                        var shuffledClues = [];
-                        shuffledClues.push(clues.correct);
-                        shuffledClues = shuffledClues.concat(clues.incorrect);
-                        var shuffle = function(array) {
-                            for (var i = array.length - 1; i > 0; i--) {
-                                var j = Math.floor(Math.random() * (i + 1));
-                                var temp = array[i];
-                                array[i] = array[j];
-                                array[j] = temp;
-                            }
-                            return array;
-                        };
-                        shuffledClues = shuffle(shuffledClues);
-
-                        return callback(null, randomWord, shuffledClues);
-                    }
-                );
-            },
-        ], function final(err, randomWord, clues) {
-            if (dbConn) {
-                dbConn.release();
-            }
-
-            if (err) {
                 log.error('app', 'Error: %s', err);
                 return res.status(500).send('Internal error');
-            }
-
-            res.render('pages/quiz', {
-                'word': randomWord.word,
-                'wid': randomWord.wid,
-                'clues': clues
             });
-        });*/
     });
 
     app.get('/quiz/answer/:wid/:cid', preproc, function (req, res) {
