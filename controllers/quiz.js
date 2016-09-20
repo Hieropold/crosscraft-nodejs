@@ -30,51 +30,31 @@ function create(app, preproc) {
         var wid = parseInt(req.params.wid);
         var cid = parseInt(req.params.cid);
 
-        db.getConnection(function (err, connection) {
-            if (err) {
-                log.error('app', 'Error: %s', err);
+        // Validate params
+        if (!wid || !cid) {
+            return res.status(404).send('Not found');
+        }
+
+        Promise.all([
+            word.getWordById(wid),
+            word.getClueById(cid)
+        ])
+            .then(function (data) {
+                var word = data[0];
+                var clue = data[1];
+
+                if (word === false || clue === false) {
+                    return res.status(404).send('Not found');
+                }
+
+                if (word.wid && clue.wid && word.wid == clue.wid) {
+                    return res.render('pages/success');
+                }
+                return res.render('pages/fail');
+            })
+            .catch(function (err) {
+                log.error('app', 'Error: %s' + err);
                 return res.status(500).send('Internal error');
-            }
-
-            async.parallel({
-                    word: function(callback) {
-                        connection.query('SELECT * FROM clues WHERE cid = ' + cid, function (err, rows) {
-                            if (err) return callback(err);
-
-                            if (rows.length == 0) {
-                                return callback('not_found');
-                            }
-
-                            return callback(null, rows[0]);
-                        });
-                    },
-                    clue: function(callback) {
-                        connection.query('SELECT * FROM words WHERE wid = ' + wid, function (err, rows) {
-                            if (err) return callback(err);
-
-                            if (rows.length == 0) {
-                                return callback('not_found');
-                            }
-
-                            return callback(null, rows[0]);
-                        });
-                    }
-                },
-                function(err, results) {
-                    if (err && err.toString() == 'not_found') {
-                        return res.status(404).send('Not found');
-                    }
-
-                    if (err) {
-                        log.error('app', 'Error: %s', err);
-                        return res.status(500).send('Internal error');
-                    }
-
-                    if (results.word.wid && results.clue.wid && results.word.wid == results.clue.wid) {
-                        return res.render('pages/success');
-                    }
-                    return res.render('pages/fail');
-                });
-        });
+            });
     });
 }

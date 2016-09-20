@@ -6,6 +6,40 @@ var db = require(__dirname + '/db.js');
 
 module.exports.getRandomWord = getRandomWord;
 module.exports.attachCluesList = attachCluesList;
+module.exports.getClueById = getClueById;
+module.exports.getWordById = getWordById;
+
+function getClueById(id) {
+    return new Promise(function (resolve, reject) {
+        db.getConnection().query('SELECT * FROM clues WHERE cid = ' + id, function (err, rows) {
+            if (err) {
+                return reject(err);
+            }
+
+            if (rows.length === 0) {
+                return resolve(false);
+            }
+
+            return resolve(rows[0]);
+        });
+    });
+}
+
+function getWordById(id) {
+    return new Promise(function (resolve, reject) {
+        db.getConnection().query('SELECT * FROM words WHERE wid = ' + id, function (err, rows) {
+            if (err) {
+                return reject(err);
+            }
+
+            if (rows.length === 0) {
+                return resolve(false);
+            }
+
+            return resolve(rows[0]);
+        });
+    });
+}
 
 function getRandomWord() {
     return getRandomOffset()
