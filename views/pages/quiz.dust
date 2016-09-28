@@ -9,7 +9,7 @@
         <h1><span class="label label-info">{word}</span></h1>
     </div>
 
-    <div class="col-sm-4">
+    <div class="col-md-6">
         <div class="list-group">
             {#clues}
                 <a class="list-group-item" href="/quiz/answer/{wid}/{cid}">{clue}</a>
