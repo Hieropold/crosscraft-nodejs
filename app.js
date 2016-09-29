@@ -6,6 +6,8 @@ var dust = require('dustjs-linkedin');
 var cons = require('consolidate');
 var fs = require('fs');
 
+log.level = 'verbose';
+
 var session = require('express-session');
 var SessionStore = require('express-mysql-session')(session);
 

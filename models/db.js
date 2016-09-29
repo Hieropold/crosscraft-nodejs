@@ -10,6 +10,7 @@ var dbConn;
 
 function init(cfg) {
     log.info('app', 'Initializing mysql db connections pool...');
+    log.verbose('app', 'Using config: %j', cfg);
     dbConn = mysql.createPool(cfg);
     log.info('app', 'Done.');
 }
