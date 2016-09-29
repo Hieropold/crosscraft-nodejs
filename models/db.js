@@ -9,10 +9,10 @@ module.exports.getConnection = getConnection;
 var dbConn;
 
 function init(cfg) {
-    log.info('app', 'Initializing mysql db connections pool...');
-    log.verbose('app', 'Using config: %j', cfg);
+    log.info('db', 'Initializing mysql db connections pool...');
+    log.verbose('db', 'DB host: %s', cfg.host);
     dbConn = mysql.createPool(cfg);
-    log.info('app', 'Done.');
+    log.info('db', 'Done.');
 }
 
 function getConnection() {
