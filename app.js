@@ -17,7 +17,8 @@ var db = require(__dirname + '/models/db.js');
 var ctrls = [
     require(__dirname + '/controllers/index.js'),
     require(__dirname + '/controllers/verifyHuman.js'),
-    require(__dirname + '/controllers/quiz.js')
+    require(__dirname + '/controllers/quiz.js'),
+    require(__dirname + '/controllers/healthcheck.js')
 ];
 
 var app = express();
@@ -45,7 +46,14 @@ log.info('app', 'Done.');
 log.info('app', 'Initializing express session handler...');
 var sessionConfig = config.get('sessions');
 sessionConfig.store = sessionStore;
-app.use(session(sessionConfig));
+app.use(function (req, res, next) {
+    // Skip session for healthcheck request
+    if (req.originalUrl === '/healthcheck') {
+        return next();
+    }
+    var sessionMiddleware = session(sessionConfig);
+    return sessionMiddleware(req, res, next);
+});
 log.info('app', 'Done.');
 
 function restrictAccess(req, res, next) {
