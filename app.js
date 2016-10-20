@@ -40,18 +40,18 @@ db.init(config.get('db'));
 log.info('app', 'Initializing mysql session store...');
 var sessionStore = new SessionStore({
     useConnectionPooling: true,
-}, db.getConnection());
-log.info('app', 'Done.');
+}, db.getPool());
+log.info('app', 'Done');
 
 log.info('app', 'Initializing express session handler...');
 var sessionConfig = config.get('sessions');
 sessionConfig.store = sessionStore;
+var sessionMiddleware = session(sessionConfig);
 app.use(function (req, res, next) {
     // Skip session for healthcheck request
     if (req.originalUrl === '/healthcheck') {
         return next();
     }
-    var sessionMiddleware = session(sessionConfig);
     return sessionMiddleware(req, res, next);
 });
 log.info('app', 'Done.');
