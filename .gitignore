@@ -1,6 +1,5 @@
 .idea/
-all-logs.log
-error.log
+*.log
 nohup.out
 nohup.old.out
 node_modules
