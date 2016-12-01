@@ -12,7 +12,7 @@ var pool;
 
 function init(cfg) {
     log.info('db', 'Initializing mysql db connections pool...');
-    log.verbose('db', 'DB host: %s', cfg.host);
+    log.verbose('db', 'DB host: %s:%s', cfg.host, cfg.port);
     pool = mysql.createPool(cfg);
     log.info('db', 'Done.');
 }
