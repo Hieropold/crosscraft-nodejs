@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 module.exports.init = init;
 module.exports.getConnection = getConnection;
 module.exports.getPool = getPool;
+module.exports.query = query;
 
 var pool;
 
@@ -34,4 +35,20 @@ function getConnection() {
 
 function getPool() {
     return pool;
+}
+
+function query(sql, params) {
+    var conn;
+    return getConnection()
+        .then(function (connection) {
+            conn = connection;
+            return conn.query(sql, params);
+        })
+        .then(function (rows) {
+            conn.release();
+            return rows;
+        })
+        .catch(function (err) {
+            conn.release();
+        });
 }

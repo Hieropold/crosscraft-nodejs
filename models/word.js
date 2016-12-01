@@ -10,35 +10,25 @@ module.exports.getClueById = getClueById;
 module.exports.getWordById = getWordById;
 
 function getClueById(id) {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT * FROM clues WHERE cid = ' + id, function (err, rows) {
-            if (err) {
-                return reject(err);
-            }
-
+    return db.query('SELECT * FROM clues WHERE cid = ?', [id])
+        .then(function (rows) {
             if (rows.length === 0) {
-                return resolve(false);
+                return false;
             }
 
-            return resolve(rows[0]);
+            return rows[0];
         });
-    });
 }
 
 function getWordById(id) {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT * FROM words WHERE wid = ' + id, function (err, rows) {
-            if (err) {
-                return reject(err);
-            }
-
+    return db.query('SELECT * FROM words WHERE wid = ?', [id])
+        .then(function (rows) {
             if (rows.length === 0) {
-                return resolve(false);
+                return false;
             }
 
-            return resolve(rows[0]);
+            return rows[0];
         });
-    });
 }
 
 function getRandomWord() {
@@ -66,44 +56,39 @@ function attachCluesList(word) {
 }
 
 function getRandomOffset() {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT FLOOR(RAND() * COUNT(*)) AS offset FROM words', function (err, rows) {
-            return (err ? reject(err) : resolve(rows[0].offset));
+    return db.query('SELECT FLOOR(RAND() * COUNT(*)) AS offset FROM words')
+        .then(function (rows) {
+            return rows[0].offset;
         });
-    });
 }
 
 function getWordByOffset(offset) {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT * FROM words LIMIT ' + offset + ', 1', function (err, rows) {
-            return (err ? reject(err) : resolve(rows[0]));
+    return db.query('SELECT * FROM words LIMIT ?, 1', [offset])
+        .then(function (rows) {
+            return rows[0];
         });
-    });
 }
 
 function calcCluesCount() {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT COUNT(*) AS total FROM clues', function (err, rows) {
-            return (err ? reject(err) : resolve(rows[0].total));
+    return db.query('SELECT COUNT(*) AS total FROM clues')
+        .then(function (rows) {
+            return rows[0].total;
         });
-    });
 }
 
 function getClueByWordId(wordId) {
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT cid, clue FROM clues WHERE wid = ' + wordId, function (err, rows) {
-            return (err ? reject(err) : resolve(rows[0]));
+    return db.query('SELECT cid, clue FROM clues WHERE wid = ?', [wordId])
+        .then(function (rows) {
+            return rows[0];
         });
-    });
 }
 
 function getRandomClue(totalClues) {
     var randomOffset = parseInt(Math.random() * totalClues);
-    return new Promise(function (resolve, reject) {
-        db.getConnection().query('SELECT cid, clue FROM clues LIMIT ' + randomOffset + ', 1', function (err, rows) {
-            return (err ? reject(err) : resolve(rows[0]));
+    return db.query('SELECT cid, clue FROM clues LIMIT ?, 1', [randomOffset])
+        .then(function (rows) {
+            return rows[0];
         });
-    });
 }
 
 /**
