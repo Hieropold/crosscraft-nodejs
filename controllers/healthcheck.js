@@ -1,10 +1,9 @@
 'use strict';
 
-var log = require('npmlog');
-var https = require('https');
-var Promise = require('bluebird');
+let log = require('npmlog');
+let https = require('https');
 
-var db = require(__dirname + '/../models/db.js');
+let db = require(__dirname + '/../models/db.js');
 
 function create(app) {
     app.get('/healthcheck', function (req, res) {
@@ -22,7 +21,7 @@ function create(app) {
 }
 
 function performHealthCheck() {
-    var conn;
+    let conn;
     return db.getConnection()
         .then(function (c) {
             conn = c;

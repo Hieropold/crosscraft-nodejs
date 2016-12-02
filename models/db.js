@@ -1,15 +1,14 @@
 'use strict';
 
-var log = require('npmlog');
-var mysql = require('mysql');
-var Promise = require('bluebird');
+let log = require('npmlog');
+let mysql = require('mysql');
 
 module.exports.init = init;
 module.exports.getConnection = getConnection;
 module.exports.getPool = getPool;
 module.exports.query = query;
 
-var pool;
+let pool;
 
 function init(cfg) {
     log.info('db', 'Initializing mysql db connections pool...');
@@ -25,8 +24,6 @@ function getConnection() {
                 return reject(err);
             }
 
-            connection.query = Promise.promisify(connection.query);
-
             return resolve(connection);
         });
     });
@@ -38,11 +35,19 @@ function getPool() {
 }
 
 function query(sql, params) {
-    var conn;
+    let conn;
     return getConnection()
         .then(function (connection) {
             conn = connection;
-            return conn.query(sql, params);
+            return new Promise(function (resolve, reject) {
+                conn.query(sql, params, function (err, rows) {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    return resolve(rows);
+                });
+            });
         })
         .then(function (rows) {
             conn.release();

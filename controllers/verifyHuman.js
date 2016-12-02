@@ -1,8 +1,8 @@
 'use strict';
 
-var log = require('npmlog');
-var config = require('config');
-var https = require('https');
+let log = require('npmlog');
+let config = require('config');
+let https = require('https');
 
 function create(app) {
     app.post('/verify-human', function (req, res) {

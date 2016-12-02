@@ -1,6 +1,5 @@
 'use strict';
 
-let Promise = require('bluebird');
 let db = require(__dirname + '/db.js');
 
 module.exports.getRandomWord = getRandomWord;

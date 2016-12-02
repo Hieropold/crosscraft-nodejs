@@ -1,13 +1,13 @@
 'use strict';
 
-var log = require('npmlog');
-var config = require('config');
+let log = require('npmlog');
+let config = require('config');
 
 module.exports.create = create;
 
 function create(app, preproc) {
     app.get('/', function (req, res) {
-        var templateVars = {};
+        let templateVars = {};
         if (!req.session.isHuman) {
             log.info('app', 'Challenging if human.');
             templateVars.recaptchaForm = {recatpchaSiteKey: config.get('recaptcha.siteKey')};

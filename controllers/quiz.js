@@ -1,6 +1,5 @@
 'use strict';
 
-let Promise = require('bluebird');
 let log = require('npmlog');
 let word = require(__dirname + '/../models/word.js');
 
